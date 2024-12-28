@@ -58,22 +58,22 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 Dashboard
               </Link>
               <Link
-                href="/stocks"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/stocks" ? "bg-muted text-primary" : "text-muted-foreground"}`}
+                href="#"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all cursor-not-allowed ${pathname === "/stocks" ? "bg-muted text-primary" : "text-muted-foreground"}`}
               >
                 <PackageSearch className="h-4 w-4" />
                 Stocks
               </Link>
               <Link
-                href="/orders"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/orders" ? "bg-muted text-primary" : "text-muted-foreground"}`}
+                href=""
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all cursor-not-allowed ${pathname === "/orders" ? "bg-muted text-primary" : "text-muted-foreground"}`}
               >
                 <ShoppingCart className="h-4 w-4" />
                 Orders
               </Link>
               <Link
-                href="/products"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/products" ? "bg-muted text-primary" : "text-muted-foreground"}`}
+                href=""
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all cursor-not-allowed ${pathname === "/products" ? "bg-muted text-primary" : "text-muted-foreground"}`}
               >
                 <Package className="h-4 w-4" />
                 Products
@@ -119,22 +119,22 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   Dashboard
                 </Link>
                 <Link
-                  href="/stocks"
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/stocks" ? "bg-muted text-primary" : "text-muted-foreground"}`}
+                  href=""
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all cursor-not-allowed ${pathname === "/stocks" ? "bg-muted text-primary" : "text-muted-foreground"}`}
                 >
                   <PackageSearch className="h-5 w-5" />
                   Stocks
                 </Link>
                 <Link
-                  href="/orders"
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/orders" ? "bg-muted text-primary" : "text-muted-foreground"}`}
+                  href=""
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all cursor-not-allowed ${pathname === "/orders" ? "bg-muted text-primary" : "text-muted-foreground"}`}
                 >
                   <ShoppingCart className="h-5 w-5" />
                   Orders
                 </Link>
                 <Link
-                  href="/products"
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/products" ? "bg-muted text-primary" : "text-muted-foreground"}`}
+                  href=""
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all cursor-not-allowed ${pathname === "/products" ? "bg-muted text-primary" : "text-muted-foreground"}`}
                 >
                   <Package className="h-5 w-5" />
                   Products

@@ -4,34 +4,43 @@ import { XIcon } from "lucide-react";
 
 import { Button } from "./ui/button";
 
-export const DrawerPortal = ({ children, isOpen, onClose, title }: { children: React.ReactNode, isOpen: boolean, onClose: () => void, title: string }) => {
-  const bodyRef = useRef<HTMLElement | null>(null)
+export const DrawerPortal = ({
+  children,
+  isOpen,
+  onClose,
+  title,
+}: {
+  children: React.ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+}) => {
+  const bodyRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      bodyRef.current = document.body
+    if (typeof window !== "undefined") {
+      bodyRef.current = document.body;
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (!bodyRef.current) {
-      return
+      return;
     }
 
     if (isOpen) {
-      bodyRef.current.style.overflowY = 'hidden'
-      return
+      bodyRef.current.style.overflowY = "hidden";
+      return;
     }
-
 
     return () => {
       if (!bodyRef.current) {
-        return
+        return;
       }
 
-      bodyRef.current.style.overflowY = 'auto'
-    }
-  }, [isOpen])
+      bodyRef.current.style.overflowY = "auto";
+    };
+  }, [isOpen]);
 
   if (!isOpen) {
     return null;
@@ -51,5 +60,6 @@ export const DrawerPortal = ({ children, isOpen, onClose, title }: { children: R
         {children}
       </div>
     </div>,
-    bodyRef.current as HTMLElement)
-}
+    bodyRef.current as HTMLElement
+  );
+};
