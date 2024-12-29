@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   Card,
@@ -21,6 +22,8 @@ export default function Login() {
     password: ""
   })
 
+  const router = useRouter()
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -31,7 +34,9 @@ export default function Login() {
 
     const user = await login(payload)
 
-    console.log(user)
+    if (user.status === 200) {
+      router.replace('/dashboard')
+    }
   }
 
   return (
@@ -41,7 +46,7 @@ export default function Login() {
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
-              Enter your email below to login to your account
+              Enter your credentials below to login to your account
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -58,7 +63,7 @@ export default function Login() {
                   />
                 </div>
 
-                <Input id="password" type="password" placeholder="********" onChange={(e) => setLoginPayload({ ...loginPayload, password: e.target.value })} required />
+                <Input id="password" type="password" placeholder="••••••••" onChange={(e) => setLoginPayload({ ...loginPayload, password: e.target.value })} required />
 
                 <Button type="submit" className="w-full">
                   Login
