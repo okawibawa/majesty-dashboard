@@ -11,9 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-
-import { DrawerPortal } from "@/components/DrawerPortal";
 import { Input } from "@/components/ui/input";
+import { DrawerPortal } from "@/components/DrawerPortal";
 
 export default function Recaps() {
   const [fields, setFields] = useState([{ id: Date.now() }]);
@@ -35,6 +34,7 @@ export default function Recaps() {
   };
 
   const handleCloseNewRecapDetailsDrawer = () => {
+    setFields([{ id: Date.now() }])
     setIsNewRecapDetailsDrawerOpen(false);
   };
 
@@ -49,31 +49,39 @@ export default function Recaps() {
         isOpen={isNewRecapDetailsDrawerOpen}
         onClose={handleCloseNewRecapDetailsDrawer}
       >
-        <div className="flex flex-col">
+        <div className="flex flex-col h-[calc(100%-60px)]">
           <p className="mb-4 text-zinc-500">Record today&#39;s order</p>
 
-          <Button
-            onClick={handleAddNewRecapField}
-            className="mb-2 self-end"
-            size="sm"
-          >
-            Add a New Field
-          </Button>
-
-          <form className="flex flex-col justify-between  bg-zinc-500">
-            <div className="space-y-2 mb-4 overflow-y-scroll">
-              {fields.map((field) => (
-                <div key={field.id} className="flex justify-between gap-2">
-                  <Input type="text" placeholder="e.g. Linkin' Pork" />
-                  <Input type="number" placeholder="e.g. 2" className="w-24" />
+          <div className="flex flex-col flex-1 min-h-0">
+            <div className="flex-1 overflow-y-scroll">
+              <form className="mb-4">
+                <div className="space-y-2 mb-4 overflow-y-scroll">
+                  {fields.map((field) => (
+                    <div key={field.id} className="flex justify-between gap-2 p-1">
+                      <Input type="text" placeholder="e.g. Linkin' Pork" />
+                      <Input type="number" placeholder="e.g. 2" className="w-12 md:w-20" />
+                    </div>
+                  ))}
                 </div>
-              ))}
+
+                <Button
+                  onClick={handleAddNewRecapField}
+                  className="border-dashed w-full"
+                  size="sm"
+                  variant='outline'
+                  type="button"
+                >
+                  Add a New Field
+                </Button>
+              </form>
             </div>
 
-            <Button type="submit" size="sm" className="self-end">
-              Submit
-            </Button>
-          </form>
+            <div className="pt-4 border-t">
+              <Button type="submit" size="sm" className="w-full">
+                Submit
+              </Button>
+            </div>
+          </div>
         </div>
       </DrawerPortal>
 
