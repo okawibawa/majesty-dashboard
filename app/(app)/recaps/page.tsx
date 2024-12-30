@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, MouseEvent, ChangeEvent, useCallback } from "react";
+import { useState, MouseEvent, ChangeEvent, useCallback, useEffect } from "react";
 import { XIcon } from "lucide-react";
 
 import {
@@ -16,10 +16,10 @@ import { Input } from "@/components/ui/input";
 import { DrawerPortal } from "@/components/DrawerPortal";
 
 import { createClient } from "@/utils/supabase/client";
-import { finished } from "stream";
 
 export default function Recaps() {
   const [isLoadingGettingMenus, setIsLoadingGettingMenus] = useState(true)
+  const [menus, setMenus] = useState<{ name: string }[] | null>(null)
   const [fields, setFields] = useState([{ id: Date.now(), menu: "", qty: 0 }]);
   const [isNewRecapDetailsDrawerOpen, setIsNewRecapDetailsDrawerOpen] =
     useState(false);
@@ -77,13 +77,17 @@ export default function Recaps() {
 
       const { data: menus, error: menusError } = await supabase.from('menus').select('*')
 
-      console.log(menus)
+      setMenus(menus)
     } catch (error) {
       console.error(error)
     } finally {
-
+      setIsLoadingGettingMenus(false)
     }
   }, [supabase])
+
+  useEffect(() => {
+    getMenus()
+  }, [getMenus])
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
