@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, MouseEvent, ChangeEvent, useCallback, useEffect } from "react";
-import { XIcon } from "lucide-react";
+import { XIcon, Check, ChevronsUpDown } from "lucide-react";
 
 import {
   Table,
@@ -13,11 +13,51 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
 import { DrawerPortal } from "@/components/DrawerPortal";
 
+import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
 
+const frameworks = [
+  {
+    value: "next.js",
+    label: "Next.js",
+  },
+  {
+    value: "sveltekit",
+    label: "SvelteKit",
+  },
+  {
+    value: "nuxt.js",
+    label: "Nuxt.js",
+  },
+  {
+    value: "remix",
+    label: "Remix",
+  },
+  {
+    value: "astro",
+    label: "Astro",
+  },
+]
+
 export default function Recaps() {
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState("")
   const [isLoadingGettingMenus, setIsLoadingGettingMenus] = useState(true)
   const [menus, setMenus] = useState<{ name: string }[] | null>(null)
   const [fields, setFields] = useState([{ id: Date.now(), menu: "", qty: 0 }]);
@@ -59,8 +99,17 @@ export default function Recaps() {
     setFields((prev) => prev.filter((field) => field.id !== fieldId))
   }
 
-  const handleFieldChange = (fieldId: number) => (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+  const handleFieldChange = (fieldId: number) => (e: ChangeEvent<HTMLInputElement> | string) => {
+    console.log(fieldId)
+    let name: string, value: string
+
+    if (typeof e === "string") {
+      name = "menu"
+      value = e
+    } else {
+      name = e.target.name
+      value = e.target.value
+    }
 
     setFields((prev) => prev.map((field) => {
       if (field.id === fieldId) {
@@ -69,6 +118,8 @@ export default function Recaps() {
 
       return field
     }))
+
+    setOpen(false)
   }
 
   const getMenus = useCallback(async () => {
@@ -89,6 +140,8 @@ export default function Recaps() {
     getMenus()
   }, [getMenus])
 
+  console.log(fields)
+
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
       <DrawerPortal
@@ -102,11 +155,52 @@ export default function Recaps() {
           <div className="flex flex-col flex-1 min-h-0">
             <div className="flex-1 overflow-y-scroll">
               <form className="mb-4">
-                <div className="space-y-1 mb-4 overflow-y-scroll">
+                <div className="overflow-y-scroll">
                   {fields.map((field, index) => (
                     <div key={field.id} className="flex justify-between items-center">
                       <div className="flex justify-between gap-2 p-1 flex-1">
-                        <Input type="text" name="menu" placeholder="e.g. Linkin' Pork" onChange={handleFieldChange(field.id)} />
+                        <Popover open={open} onOpenChange={setOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={open}
+                              className="w-full justify-between"
+                            >
+                              {field.menu
+                                ? frameworks.find((framework) => framework.value === field.menu)?.label
+                                : "Select menu..."}
+                              <ChevronsUpDown className="opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0">
+                            <Command className="w-full">
+                              <CommandInput placeholder="Search menu..." className="h-9" />
+                              <CommandList>
+                                <CommandEmpty>No framework found.</CommandEmpty>
+                                <CommandGroup>
+                                  {frameworks.map((framework) => (
+                                    <CommandItem
+                                      key={framework.value}
+                                      value={framework.value}
+                                      onSelect={handleFieldChange(field.id)}
+                                    >
+                                      {framework.label}
+                                      <Check
+                                        className={cn(
+                                          "ml-auto",
+                                          value === framework.value ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+
+                        {/* <Input type="text" name="menu" placeholder="e.g. Linkin' Pork" onChange={handleFieldChange(field.id)} /> */}
                         <Input type="number" name="qty" placeholder="e.g. 2" className="w-12 md:w-20" onChange={handleFieldChange(field.id)} />
                       </div>
 
