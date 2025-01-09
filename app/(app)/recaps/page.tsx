@@ -100,7 +100,6 @@ export default function Recaps() {
   }
 
   const handleFieldChange = (fieldId: number) => (e: ChangeEvent<HTMLInputElement> | string) => {
-    console.log(fieldId)
     let name: string, value: string
 
     if (typeof e === "string") {
@@ -126,7 +125,7 @@ export default function Recaps() {
     try {
       setIsLoadingGettingMenus(true)
 
-      const { data: menus, error: menusError } = await supabase.from('menus').select('*')
+      const { data: menus, error } = await supabase.from('menus').select('*')
 
       setMenus(menus)
     } catch (error) {
@@ -139,8 +138,6 @@ export default function Recaps() {
   useEffect(() => {
     getMenus()
   }, [getMenus])
-
-  console.log(fields)
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">

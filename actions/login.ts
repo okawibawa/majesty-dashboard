@@ -15,7 +15,7 @@ export const login = async (payload: FormData) => {
   })
 
   if (error) {
-    return { status: 500, error: error.message }
+    return { status: error.status, error: error.message }
   }
 
   cookies().set('pst-2k_t', data.session.access_token)

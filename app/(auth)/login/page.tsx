@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -21,8 +21,16 @@ export default function Login() {
     email: "",
     password: ""
   })
+  const [isLoginError, setIsLoginError] = useState(false)
+  const [isLoginErrorMessage, setIsLoginErrorMessage] = useState<string | null>(null)
 
   const router = useRouter()
+
+  const handleLoginPayloadChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setLoginPayload({ ...loginPayload, [e.target.name]: e.target.value })
+    setIsLoginError(false)
+    setIsLoginErrorMessage(null)
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -33,6 +41,12 @@ export default function Login() {
     payload.append('password', loginPayload.password)
 
     const user = await login(payload)
+
+    if (user.status === 400) {
+      setIsLoginError(true)
+      setIsLoginErrorMessage(user.error)
+      return
+    }
 
     if (user.status === 200) {
       router.replace('/dashboard')
@@ -58,12 +72,21 @@ export default function Login() {
                     id="email"
                     type="email"
                     placeholder="m@example.com"
-                    onChange={(e) => setLoginPayload({ ...loginPayload, email: e.target.value })}
+                    name="email"
+                    onChange={handleLoginPayloadChange}
                     required
                   />
                 </div>
 
-                <Input id="password" type="password" placeholder="••••••••" onChange={(e) => setLoginPayload({ ...loginPayload, password: e.target.value })} required />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  name="password"
+                  onChange={handleLoginPayloadChange}
+                  required
+                />
+                {isLoginError && <small className="text-red-500">{isLoginErrorMessage}</small>}
 
                 <Button type="submit" className="w-full">
                   Login
