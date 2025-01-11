@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, MouseEvent, ChangeEvent, useCallback, useEffect } from "react";
-import { XIcon, Check, ChevronsUpDown } from "lucide-react";
+import {
+  useState,
+  MouseEvent,
+  ChangeEvent,
+  useCallback,
+  useEffect,
+} from "react";
+import { XIcon } from "lucide-react";
 
 import {
   Table,
@@ -12,61 +18,27 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 
+import { RecapInputs } from "@/components/RecapInputs";
 import { DrawerPortal } from "@/components/DrawerPortal";
 
-import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
-
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
+import { Database } from "@/types/supabase";
 
 export default function Recaps() {
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("")
-  const [isLoadingGettingMenus, setIsLoadingGettingMenus] = useState(true)
-  const [menus, setMenus] = useState<{ name: string }[] | null>(null)
-  const [fields, setFields] = useState([{ id: Date.now(), menu: "", qty: 0 }]);
+  const [isLoadingGettingMenus, setIsLoadingGettingMenus] = useState(true);
+  const [menus, setMenus] = useState<
+    { value: string; label: string }[] | undefined
+  >(undefined);
+  const [fields, setFields] = useState<
+    { id: number; menu: string; qty: number }[]
+  >([{ id: Date.now(), menu: "", qty: 0 }]);
   const [isNewRecapDetailsDrawerOpen, setIsNewRecapDetailsDrawerOpen] =
     useState(false);
   const [isRecapDetailsDrawerOpen, setIsRecapDetailsDrawerOpen] =
     useState(false);
 
-  const supabase = createClient()
+  const supabase = createClient();
 
   const handleOpenRecapDetailsDrawer = () => {
     setIsRecapDetailsDrawerOpen(true);
@@ -81,63 +53,59 @@ export default function Recaps() {
   };
 
   const handleCloseNewRecapDetailsDrawer = () => {
-    setFields([{ id: Date.now(), menu: "", qty: 0 }])
+    setFields([{ id: Date.now(), menu: "", qty: 0 }]);
     setIsNewRecapDetailsDrawerOpen(false);
   };
 
   const handleAddNewRecapField = () => {
-    if (fields[fields.length - 1].menu === "" || fields[fields.length - 1].qty === 0) {
-      return
-    }
+    // if (
+    //   fields[fields.length - 1].menu === "" ||
+    //   fields[fields.length - 1].qty === 0
+    // ) {
+    //   return;
+    // }
 
     setFields((prev) => [...prev, { id: Date.now(), menu: "", qty: 0 }]);
   };
 
-  const handleRemoveField = (fieldId: number) => (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
+  const handleRemoveField =
+    (fieldId: number) => (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
 
-    setFields((prev) => prev.filter((field) => field.id !== fieldId))
-  }
-
-  const handleFieldChange = (fieldId: number) => (e: ChangeEvent<HTMLInputElement> | string) => {
-    let name: string, value: string
-
-    if (typeof e === "string") {
-      name = "menu"
-      value = e
-    } else {
-      name = e.target.name
-      value = e.target.value
-    }
-
-    setFields((prev) => prev.map((field) => {
-      if (field.id === fieldId) {
-        return { ...field, [name]: value }
-      }
-
-      return field
-    }))
-
-    setOpen(false)
-  }
+      setFields((prev) => prev.filter((field) => field.id !== fieldId));
+    };
 
   const getMenus = useCallback(async () => {
     try {
-      setIsLoadingGettingMenus(true)
+      setIsLoadingGettingMenus(true);
 
-      const { data: menus, error } = await supabase.from('menus').select('*')
+      const { data: menus, error } = (await supabase
+        .from("menus")
+        .select("*")) as {
+        data: Database["public"]["Tables"]["menus"]["Row"][] | null;
+        error: Error | null;
+      };
 
-      setMenus(menus)
+      if (menus) {
+        setMenus(
+          menus.map((menu) => ({
+            value: menu.name,
+            label: menu.name,
+          })),
+        );
+      }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setIsLoadingGettingMenus(false)
+      setIsLoadingGettingMenus(false);
     }
-  }, [supabase])
+  }, [supabase]);
 
   useEffect(() => {
-    getMenus()
-  }, [getMenus])
+    getMenus();
+  }, [getMenus]);
+
+  console.log(fields);
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
@@ -154,55 +122,24 @@ export default function Recaps() {
               <form className="mb-4">
                 <div className="overflow-y-scroll">
                   {fields.map((field, index) => (
-                    <div key={field.id} className="flex justify-between items-center">
+                    <div
+                      key={field.id}
+                      className="flex justify-between items-center"
+                    >
                       <div className="flex justify-between gap-2 p-1 flex-1">
-                        <Popover open={open} onOpenChange={setOpen}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              aria-expanded={open}
-                              className="w-full justify-between"
-                            >
-                              {field.menu
-                                ? frameworks.find((framework) => framework.value === field.menu)?.label
-                                : "Select menu..."}
-                              <ChevronsUpDown className="opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0">
-                            <Command className="w-full">
-                              <CommandInput placeholder="Search menu..." className="h-9" />
-                              <CommandList>
-                                <CommandEmpty>No framework found.</CommandEmpty>
-                                <CommandGroup>
-                                  {frameworks.map((framework) => (
-                                    <CommandItem
-                                      key={framework.value}
-                                      value={framework.value}
-                                      onSelect={handleFieldChange(field.id)}
-                                    >
-                                      {framework.label}
-                                      <Check
-                                        className={cn(
-                                          "ml-auto",
-                                          value === framework.value ? "opacity-100" : "opacity-0"
-                                        )}
-                                      />
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-
-                        {/* <Input type="text" name="menu" placeholder="e.g. Linkin' Pork" onChange={handleFieldChange(field.id)} /> */}
-                        <Input type="number" name="qty" placeholder="e.g. 2" className="w-12 md:w-20" onChange={handleFieldChange(field.id)} />
+                        <RecapInputs
+                          isLoadingGettingMenus={isLoadingGettingMenus}
+                          menus={menus}
+                          field={field}
+                          setFields={setFields}
+                        />
                       </div>
 
                       {index !== 0 && (
-                        <Button variant="ghost" onClick={handleRemoveField(field.id)}>
+                        <Button
+                          variant="ghost"
+                          onClick={handleRemoveField(field.id)}
+                        >
                           <XIcon size={16} />
                         </Button>
                       )}
@@ -212,11 +149,22 @@ export default function Recaps() {
 
                 <div className="p-1">
                   <Button
+                    type="button"
                     onClick={handleAddNewRecapField}
                     className="border-dashed w-full"
                     size="sm"
-                    variant='outline'
-                    type="button"
+                    variant={
+                      isLoadingGettingMenus ||
+                      fields[fields.length - 1].menu === "" ||
+                      fields[fields.length - 1].qty === 0
+                        ? "secondary"
+                        : "outline"
+                    }
+                    disabled={
+                      isLoadingGettingMenus ||
+                      fields[fields.length - 1].menu === "" ||
+                      fields[fields.length - 1].qty === 0
+                    }
                   >
                     Add a New Field
                   </Button>
@@ -260,28 +208,6 @@ export default function Recaps() {
           <TableBody>
             <TableRow>
               <TableCell className="hidden md:table-cell">2023-06-23</TableCell>
-              <TableCell className="text-right">
-                <Button
-                  variant="outline"
-                  onClick={handleOpenRecapDetailsDrawer}
-                >
-                  Detail
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="hidden md:table-cell">2023-06-24</TableCell>
-              <TableCell className="text-right">
-                <Button
-                  variant="outline"
-                  onClick={handleOpenRecapDetailsDrawer}
-                >
-                  Detail
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="hidden md:table-cell">2023-06-25</TableCell>
               <TableCell className="text-right">
                 <Button
                   variant="outline"
