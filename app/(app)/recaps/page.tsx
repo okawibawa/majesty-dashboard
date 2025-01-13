@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useState,
-  MouseEvent,
-  ChangeEvent,
-  useCallback,
-  useEffect,
-} from "react";
+import { useState, MouseEvent, useCallback, useEffect } from "react";
 import { XIcon } from "lucide-react";
 
 import {
@@ -18,12 +12,27 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 import { RecapInputs } from "@/components/RecapInputs";
 import { DrawerPortal } from "@/components/DrawerPortal";
 
 import { createClient } from "@/utils/supabase/client";
+
 import { Database } from "@/types/supabase";
+
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export default function Recaps() {
   const [isLoadingGettingMenus, setIsLoadingGettingMenus] = useState(true);
@@ -38,6 +47,7 @@ export default function Recaps() {
   const [isRecapDetailsDrawerOpen, setIsRecapDetailsDrawerOpen] =
     useState(false);
 
+  const isTablet = useMediaQuery("(min-width: 900px)");
   const supabase = createClient();
 
   const handleOpenRecapDetailsDrawer = () => {
@@ -58,13 +68,6 @@ export default function Recaps() {
   };
 
   const handleAddNewRecapField = () => {
-    // if (
-    //   fields[fields.length - 1].menu === "" ||
-    //   fields[fields.length - 1].qty === 0
-    // ) {
-    //   return;
-    // }
-
     setFields((prev) => [...prev, { id: Date.now(), menu: "", qty: 0 }]);
   };
 
@@ -104,8 +107,6 @@ export default function Recaps() {
   useEffect(() => {
     getMenus();
   }, [getMenus]);
-
-  console.log(fields);
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
@@ -191,7 +192,43 @@ export default function Recaps() {
 
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">Recaps</h1>
-        <Button onClick={handleOpenNewRecapDetailsDrawer}>New Recap</Button>
+        {/* <Button onClick={handleOpenNewRecapDetailsDrawer}>New Recap</Button> */}
+
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="default">New Recap</Button>
+          </SheetTrigger>
+          <SheetContent
+            className="h-[92dvh] lg:max-w-[512px]"
+            side={isTablet ? "right" : "bottom"}
+          >
+            <SheetHeader>
+              <SheetTitle>Edit profile</SheetTitle>
+              <SheetDescription>
+                Make changes to your profile here. Click save when you're done.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
+                </Label>
+                <Input id="name" value="Pedro Duarte" className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-right">
+                  Username
+                </Label>
+                <Input id="username" value="@peduarte" className="col-span-3" />
+              </div>
+            </div>
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button type="submit">Save changes</Button>
+              </SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
       </div>
 
       <div
