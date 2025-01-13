@@ -80,6 +80,10 @@ export default function Recaps() {
     }
   }, [supabase]);
 
+  const handleCloseRecapDrawer = () => {
+    setFields([{ id: Date.now(), menu: "", qty: 0 }]);
+  };
+
   useEffect(() => {
     getMenus();
   }, [getMenus]);
@@ -95,6 +99,7 @@ export default function Recaps() {
           <SheetContent
             className="h-[92dvh] lg:h-full lg:max-w-[512px]"
             side={isTablet ? "right" : "bottom"}
+            onCloseAutoFocus={handleCloseRecapDrawer}
           >
             <SheetHeader className="md:text-left">
               <SheetTitle>New Daily Recap</SheetTitle>

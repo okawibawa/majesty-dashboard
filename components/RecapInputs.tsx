@@ -35,7 +35,6 @@ export const RecapInputs = ({
   setFields,
 }: RecapPopover) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [value, setValue] = useState("");
 
   const handleFieldChange =
     (fieldId: number) => (e: ChangeEvent<HTMLInputElement> | string) => {
@@ -94,7 +93,7 @@ export const RecapInputs = ({
                     <Check
                       className={cn(
                         "ml-auto",
-                        value === menu.value ? "opacity-100" : "opacity-0",
+                        field.menu === menu.value ? "opacity-100" : "opacity-0",
                       )}
                     />
                   </CommandItem>
