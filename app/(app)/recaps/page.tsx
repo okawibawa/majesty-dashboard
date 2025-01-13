@@ -12,8 +12,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
@@ -26,7 +24,6 @@ import {
 } from "@/components/ui/sheet";
 
 import { RecapInputs } from "@/components/RecapInputs";
-import { DrawerPortal } from "@/components/DrawerPortal";
 
 import { createClient } from "@/utils/supabase/client";
 
@@ -42,30 +39,9 @@ export default function Recaps() {
   const [fields, setFields] = useState<
     { id: number; menu: string; qty: number }[]
   >([{ id: Date.now(), menu: "", qty: 0 }]);
-  const [isNewRecapDetailsDrawerOpen, setIsNewRecapDetailsDrawerOpen] =
-    useState(false);
-  const [isRecapDetailsDrawerOpen, setIsRecapDetailsDrawerOpen] =
-    useState(false);
 
   const isTablet = useMediaQuery("(min-width: 900px)");
   const supabase = createClient();
-
-  const handleOpenRecapDetailsDrawer = () => {
-    setIsRecapDetailsDrawerOpen(true);
-  };
-
-  const handleCloseRecapDetailsDrawer = () => {
-    setIsRecapDetailsDrawerOpen(false);
-  };
-
-  const handleOpenNewRecapDetailsDrawer = () => {
-    setIsNewRecapDetailsDrawerOpen(true);
-  };
-
-  const handleCloseNewRecapDetailsDrawer = () => {
-    setFields([{ id: Date.now(), menu: "", qty: 0 }]);
-    setIsNewRecapDetailsDrawerOpen(false);
-  };
 
   const handleAddNewRecapField = () => {
     setFields((prev) => [...prev, { id: Date.now(), menu: "", qty: 0 }]);
@@ -110,121 +86,76 @@ export default function Recaps() {
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-      <DrawerPortal
-        title="New Recap"
-        isOpen={isNewRecapDetailsDrawerOpen}
-        onClose={handleCloseNewRecapDetailsDrawer}
-      >
-        <div className="flex flex-col h-[calc(100%-60px)]">
-          <p className="mb-4 text-zinc-500">Record today&#39;s order</p>
-
-          <div className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 overflow-y-scroll">
-              <form className="mb-4">
-                <div className="overflow-y-scroll">
-                  {fields.map((field, index) => (
-                    <div
-                      key={field.id}
-                      className="flex justify-between items-center"
-                    >
-                      <div className="flex justify-between gap-2 p-1 flex-1">
-                        <RecapInputs
-                          isLoadingGettingMenus={isLoadingGettingMenus}
-                          menus={menus}
-                          field={field}
-                          setFields={setFields}
-                        />
-                      </div>
-
-                      {index !== 0 && (
-                        <Button
-                          variant="ghost"
-                          onClick={handleRemoveField(field.id)}
-                        >
-                          <XIcon size={16} />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="p-1">
-                  <Button
-                    type="button"
-                    onClick={handleAddNewRecapField}
-                    className="border-dashed w-full"
-                    size="sm"
-                    variant={
-                      isLoadingGettingMenus ||
-                      fields[fields.length - 1].menu === "" ||
-                      fields[fields.length - 1].qty === 0
-                        ? "secondary"
-                        : "outline"
-                    }
-                    disabled={
-                      isLoadingGettingMenus ||
-                      fields[fields.length - 1].menu === "" ||
-                      fields[fields.length - 1].qty === 0
-                    }
-                  >
-                    Add a New Field
-                  </Button>
-                </div>
-              </form>
-            </div>
-
-            <div className="pt-4 border-t">
-              <Button type="submit" size="sm" className="w-full">
-                Submit
-              </Button>
-            </div>
-          </div>
-        </div>
-      </DrawerPortal>
-
-      <DrawerPortal
-        title="Recap Details"
-        isOpen={isRecapDetailsDrawerOpen}
-        onClose={handleCloseRecapDetailsDrawer}
-      >
-        <div>this is where the drawer content will go</div>
-      </DrawerPortal>
-
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">Recaps</h1>
-        {/* <Button onClick={handleOpenNewRecapDetailsDrawer}>New Recap</Button> */}
-
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="default">New Recap</Button>
           </SheetTrigger>
           <SheetContent
-            className="h-[92dvh] lg:max-w-[512px]"
+            className="h-[92dvh] lg:h-full lg:max-w-[512px]"
             side={isTablet ? "right" : "bottom"}
           >
-            <SheetHeader>
-              <SheetTitle>Edit profile</SheetTitle>
-              <SheetDescription>
-                Make changes to your profile here. Click save when you're done.
-              </SheetDescription>
+            <SheetHeader className="md:text-left">
+              <SheetTitle>New Daily Recap</SheetTitle>
+              <SheetDescription>Record today&#39;s order</SheetDescription>
             </SheetHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
-                </Label>
-                <Input id="name" value="Pedro Duarte" className="col-span-3" />
+            <form className="mb-4">
+              <div className="overflow-y-scroll">
+                {fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="flex justify-between items-center"
+                  >
+                    <div className="flex justify-between gap-2 p-1 flex-1">
+                      <RecapInputs
+                        isLoadingGettingMenus={isLoadingGettingMenus}
+                        menus={menus}
+                        field={field}
+                        setFields={setFields}
+                      />
+                    </div>
+
+                    {index !== 0 && (
+                      <Button
+                        variant="ghost"
+                        onClick={handleRemoveField(field.id)}
+                      >
+                        <XIcon size={16} />
+                      </Button>
+                    )}
+                  </div>
+                ))}
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
-                  Username
-                </Label>
-                <Input id="username" value="@peduarte" className="col-span-3" />
+
+              <div className="p-1">
+                <Button
+                  type="button"
+                  onClick={handleAddNewRecapField}
+                  className="border-dashed w-full"
+                  size="sm"
+                  variant={
+                    isLoadingGettingMenus ||
+                    fields[fields.length - 1].menu === "" ||
+                    fields[fields.length - 1].qty === 0
+                      ? "secondary"
+                      : "outline"
+                  }
+                  disabled={
+                    isLoadingGettingMenus ||
+                    fields[fields.length - 1].menu === "" ||
+                    fields[fields.length - 1].qty === 0
+                  }
+                >
+                  Add a New Field
+                </Button>
               </div>
-            </div>
+            </form>
             <SheetFooter>
               <SheetClose asChild>
-                <Button type="submit">Save changes</Button>
+                <Button type="submit" size="sm" className="w-full">
+                  Submit
+                </Button>
               </SheetClose>
             </SheetFooter>
           </SheetContent>
@@ -246,12 +177,7 @@ export default function Recaps() {
             <TableRow>
               <TableCell className="hidden md:table-cell">2023-06-23</TableCell>
               <TableCell className="text-right">
-                <Button
-                  variant="outline"
-                  onClick={handleOpenRecapDetailsDrawer}
-                >
-                  Detail
-                </Button>
+                <Button variant="outline">Detail</Button>
               </TableCell>
             </TableRow>
           </TableBody>
